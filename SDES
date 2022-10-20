@@ -3,12 +3,23 @@ import java.util.*;
 Public Class SDES {
   
   //encrypt
+  public static byte[] Encrypt(byte[] rawkey, byte[] plaintext){
   
   
   
+  
+  
+  
+  
+  
+  
+  }
+
   
   //decrypt
+  public static byte[] Decrypt(byte[] rawkey, byte[] ciphertext){
   
   
-  
+  }
+ 
 }
