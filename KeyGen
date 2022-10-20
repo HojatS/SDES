@@ -9,6 +9,13 @@ public class KeyGen {
     this.rawKey=rawKey
   }
   
+  public byte[] getK1() {
+    return k1;
+  }
+  public byte[] getK2() {
+    return k2;
+  }
+  
   //P10
   
   //LS1 + P8 --> K1
