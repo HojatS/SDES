@@ -1,0 +1,19 @@
+import java.util.*;
+
+public class KeyGen {
+  private byte[] rawKey;
+  private byte[] k1;
+  private byte[] k2;
+  
+  public KeyGen(byte[] rawKey){
+    this.rawKey=rawKey
+  }
+  
+  //P10
+  
+  //LS1 + P8 --> K1
+  
+  //LS2 + P8 --> K2
+  
+  
+}
