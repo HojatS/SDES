@@ -6,14 +6,29 @@ Public Class SDES {
   public static byte[] Encrypt(byte[] rawkey, byte[] plaintext){
   
   
-  
-  
-  
-  
+    //IP (initial permutation)
+
+    //EP (expansion Pbox)
+
+    //S-boxes
+
+
+    //P4
+
+
+    //Swap
+
+
+    //round 2
+
+
+    //IP-1 (inverse)
   
   
   
   }
+  
+  //permutation function (byte[], permutation[])
 
   
   //decrypt
