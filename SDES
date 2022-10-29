@@ -1,40 +1,118 @@
+import org.apache.commons.lang3.*;
 import java.util.*;
 
-Public Class SDES {
+public class SDES {
+    public static void main(String[] args){
+        //read text input and convert to byte array 
+        
+    }
   
-  //encrypt
-  public static byte[] Encrypt(byte[] rawkey, byte[] plaintext){
+    //encrypt
+    public static byte[] Encrypt(byte[] rawKey, byte[] plainText){
+        byte[] cipher = new byte[plainText.length];
+        
+        //split plaintext
+        int splitSize = plainText.length/2;
+        byte[] plainTextLeft = Arrays.copyOfRange(plainText, 0, splitSize);
+        byte[] plainTextRight = Arrays.copyOfRange(plainText, splitSize, rawKey.length);
+        
+        //generate keys
+        KeyGen keyGen = new KeyGen(rawKey);
+        byte[] K1 = keyGen.getK1();
+        byte[] K2 = keyGen.getK2();
+        
+        //IP (initial permutation)
+        int[] IP = {2, 6, 3, 1, 4, 8, 5, 7};
+        
+        
+        //****************** F function
+        
+        
+        //Swap
+        
+        
+        //round 2
+        
+        
+        //IP-1 (inverse)
+        int[] inverseIP = {4, 1, 3, 5, 7, 2, 8, 6};
+        
+        
+        
+        return cipher;
+    }
+    
+    //decrypt
+    public static byte[] Decrypt(byte[] rawkey, byte[] ciphertext){
+        
+        
+    }
+    
+    /*
+    permutation function (byte[], int[]) {
+        
+        
+        
+    }
+    */
+    
+    //XOR
+    public static byte[] XOR(byte[] array1, byte[] array2) {
+        byte[] xor = new byte[array1.length];
+        for (int i = 0; i < array1.length; i++) 
+            xor[i] = (byte) (array1[i] ^ array2[i]);
+        return xor;
+    }
+    
+    //F Funcion
+    public static byte[] FunctionF(byte[] byteArray, byte[] firstKey){
+        byte[] result = new byte[byteArray.length];
+        //EP (expansion Pbox)
+        
+        //S-boxes
+        
+        //P4
+        int[] P4 = {2, 4, 3, 1};
+        
+        return result;
+    }
+}
+
+class KeyGen {
+    private byte[] k1;
+    private byte[] k2;
+    
+    public KeyGen(byte[] rawKey){
+        int[] p10 = {3, 5, 2, 7, 4, 10, 1, 9, 8, 6};
+        int[] p8 = {3, 7, 4, 8, 5, 10, 9};
+        // byte[] output = permutation(rawKey,p10)
+        int splitSize = output.length/2;
+        byte[] outputLeft = Arrays.copyOfRange(output, 0, splitSize);
+        byte[] outputRight = Arrays.copyOfRange(output, splitSize, rawKey.length);
+        output = ArrayUtils.addAll(LeftShift(outputLeft,1),LeftShift(outputRight,1));
+        // this.k1 = permutation(output, p8)
+        // output = ArrayUtils.addAll(LeftShift(outputLeft,2),LeftShift(outputRight,2));
+        // this.k2 = permutation(output, p8)
+    }
   
-  
-    //IP (initial permutation)
-
-    //EP (expansion Pbox)
-
-    //S-boxes
-
-
-    //P4
-
-
-    //Swap
-
-
-    //round 2
-
-
-    //IP-1 (inverse)
-  
-  
-  
-  }
-  
-  //permutation function (byte[], permutation[])
-
-  
-  //decrypt
-  public static byte[] Decrypt(byte[] rawkey, byte[] ciphertext){
-  
-  
-  }
- 
+    public byte[] getK1() {
+        return k1;
+    }
+    
+    public byte[] getK2() {
+        return k2;
+    }
+    
+    public static byte[] LeftShift(byte[] array, int count){
+        for (int i=0; i < count ; i++){
+            int j;
+            byte first;
+            first=array[0];
+            for(j=0; j < array.length-1; j++){
+                array[j] = array[j+1];
+            }
+            array[j] = first;
+        }
+        return array;
+    }  
 }
