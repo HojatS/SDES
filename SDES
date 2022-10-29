@@ -3,7 +3,21 @@ import java.util.*;
 
 public class SDES {
     public static void main(String[] args){
-        //read text input and convert to byte array 
+        Scanner scanner = new Scanner(System.in);
+        
+        System.out.println("Enter the length of the plaintext/ciphertext:");
+        int n=scanner.nextInt();
+        byte[] plainText = new byte[n];
+        
+        System.out.println("Enter byte values:");
+        for(int i=0; i<n; i++)     
+            plainText[i]=scanner.nextByte();
+        
+        System.out.println(".......................................\n");
+        
+        //
+        // encrypt or decrypt
+        //
         
     }
   
