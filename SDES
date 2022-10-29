@@ -11,18 +11,21 @@ public class SDES {
     public static byte[] Encrypt(byte[] rawKey, byte[] plainText){
         byte[] cipher = new byte[plainText.length];
         
-        //split plaintext
-        int splitSize = plainText.length/2;
-        byte[] plainTextLeft = Arrays.copyOfRange(plainText, 0, splitSize);
-        byte[] plainTextRight = Arrays.copyOfRange(plainText, splitSize, rawKey.length);
+        
+        //IP (initial permutation)
+        int[] IP = {2, 6, 3, 1, 4, 8, 5, 7};
+        
+        //split 
+        //int splitSize = plainText.length/2;
+        //byte[] plainTextLeft = Arrays.copyOfRange(IPresult, 0, splitSize);
+        //byte[] plainTextRight = Arrays.copyOfRange(IPresult, splitSize, rawKey.length);
         
         //generate keys
         KeyGen keyGen = new KeyGen(rawKey);
         byte[] K1 = keyGen.getK1();
         byte[] K2 = keyGen.getK2();
         
-        //IP (initial permutation)
-        int[] IP = {2, 6, 3, 1, 4, 8, 5, 7};
+        
         
         
         //****************** F function
