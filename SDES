@@ -2,6 +2,10 @@ import org.apache.commons.lang3.*;
 import java.util.*;
 
 public class SDES {
+
+    byte[] s0 = {1,0,3,2,3,2,1,0,0,2,1,3,3,1,3,2};
+    byte[] s1 = {0,1,2,3,2,0,1,3,3,0,1,0,2,1,0,3};
+
     public static void main(String[] args){
         Scanner scanner = new Scanner(System.in);
         
@@ -47,6 +51,20 @@ public class SDES {
         
         //Swap
         
+        public static byte[] SF(byte[] input){
+        byte[] output = new byte[8];
+        output[0] = input[4];
+        output[1] = input[5];
+        output[2] = input[6];
+        output[3] = input[7];
+        output[4] = input[0];
+        output[5] = input[1];
+        output[6] = input[2];
+        output[7] = input[3];
+
+        return output;
+    }
+        
         
         //round 2
         
@@ -67,7 +85,19 @@ public class SDES {
     
     /*
     permutation function (byte[], int[]) {
-        
+        public static byte[] permutationFunc(byte [] input){
+        byte [] temp = new byte[8];
+        int[] ip_order = {2, 6, 3, 1, 4, 8, 5, 7};
+
+        for (int i = 0; i < temp.length; i++){
+            temp[i] = input[ip_order[i]];
+        }
+        if (debug) {
+            System.out.println("Initial Permutation");
+            printArray(temp);
+        }
+        return temp;
+    }
         
         
     }
@@ -84,7 +114,26 @@ public class SDES {
     //F Funcion
     public static byte[] FunctionF(byte[] byteArray, byte[] firstKey){
         byte[] result = new byte[byteArray.length];
+        
+        
         //EP (expansion Pbox)
+     
+    public static byte[] EP(byte[] array) {
+        int[] epOrder = {4, 1, 2, 3, 2, 3, 4, 1};
+        byte[] ep = new byte[8];
+
+        for (int i=0; i<ep.length; i++) {
+            ep[i] = array[epOrder[i]-1];
+        }
+        if (debug) {
+            System.out.println("Expand and Permutate");
+            printArray(ep);
+        }
+        return ep;
+    }
+        
+        
+        
         
         //S-boxes
         
