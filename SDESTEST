@@ -1,0 +1,281 @@
+import org.apache.commons.lang3.*;
+import java.util.*;
+
+public class SDESTEST {
+    
+    public static void main(String[] args){
+        
+        byte[] pt = {1,0,1,0,0,0,1,1};
+        byte[] rk = {1,1,1,0,0,0,1,1,1,0};
+        
+        byte[] c = encrypt(rk, pt);
+        System.out.println("CIPHER");
+        for(int i=0; i<c.length; i++)     
+            System.out.print(c[i]);
+        
+    }
+  
+    //encrypt
+    public static byte[] encrypt(byte[] rawKey, byte[] plainText){
+        byte[] cipher = new byte[plainText.length];
+        
+        //IP (initial permutation)
+        int[] IP = {2, 6, 3, 1, 4, 8, 5, 7};
+        byte[] IPResult = permutation(plainText, IP);
+        
+        System.out.println("IP RESULT");
+        print(IPResult);
+        System.out.println();
+        
+        KeyGen keyGen = new KeyGen(rawKey);
+        byte[] K1 = keyGen.getK1();
+        byte[] K2 = keyGen.getK2();
+        
+        System.out.println("KEY1");
+        print(K1);
+        System.out.println();
+        
+        System.out.println("KEY2");
+        print(K2);
+        System.out.println();
+        
+        //fK round 1
+        cipher = fK(IPResult, K1);
+
+        
+        //Swap = left shift by 4
+        
+        cipher = leftShift(cipher, cipher.length/2);
+        
+        System.out.println("SWAP");
+        print(cipher);
+        System.out.println();
+        
+        //fk round 2
+        cipher = fK(cipher, K2);
+        
+        
+        //IP-1 (inverse)
+        int[] inverseIP = {4, 1, 3, 5, 7, 2, 8, 6};
+        cipher = permutation(cipher, inverseIP);
+        
+        return cipher;
+    }
+    
+    //decrypt
+    public static byte[] decrypt(byte[] rawKey, byte[] cipherText){
+        byte[] plaintext = new byte[cipherText.length];
+        
+        //IP (initial permutation)
+        int[] IP = {2, 6, 3, 1, 4, 8, 5, 7};
+        byte[] IPResult = permutation(cipherText, IP);
+        
+        //generate keys
+        KeyGen keyGen = new KeyGen(rawKey);
+        byte[] K1 = keyGen.getK1();
+        byte[] K2 = keyGen.getK2();
+        
+        
+        //fK round 2
+        plaintext = fK(IPResult, K2);
+
+        
+        //Swap = left shift by 4
+        plaintext = leftShift(plaintext, plaintext.length/2);
+        
+        
+        //fk round 1
+        plaintext = fK(plaintext, K1);
+        
+        //IP-1 (inverse)
+        int[] inverseIP = {4, 1, 3, 5, 7, 2, 8, 6};
+        plaintext = permutation(plaintext, inverseIP);
+        
+        return plaintext;
+        
+        
+    }
+    
+    //fK function
+    public static byte[] fK(byte[] input, byte[] key){
+        byte[] output = new byte[input.length];
+        
+        //split 
+        int splitSize = input.length/2;
+        byte[] IPLeft = Arrays.copyOfRange(input, 0, splitSize);
+        byte[] IPRight = Arrays.copyOfRange(input, splitSize, input.length);
+        
+        System.out.println("IPLeft");
+        print(IPLeft);
+        System.out.println();
+        
+        System.out.println("IPRight");
+        print(IPRight);
+        System.out.println();
+        
+        output = ArrayUtils.addAll(XOR(IPLeft,functionF(IPRight,key)),IPRight);
+        
+        System.out.println("OUTPUT OF fK");
+        print(output);
+        System.out.println();
+        
+        return output;
+    }
+    
+    //F Funcion
+    public static byte[] functionF(byte[] byteArray, byte[] key){
+        byte[] result = new byte[byteArray.length];
+        
+        //EP (expansion Pbox)
+        int[] EP = {4, 1, 2, 3, 2, 3, 4, 1};
+        result = permutation(byteArray, EP);
+        
+        System.out.println("******* F FUNCTION ********");
+        System.out.println("AFTER EP");
+        print(result);
+        System.out.println();
+        
+        //XOR
+        result = XOR(result, key);
+        
+        System.out.println("XOR WITH KEY");
+        print(result);
+        System.out.println();
+        
+        //split
+        byte[] resultLeft = Arrays.copyOfRange(result, 0, result.length/2);
+        byte[] resultRight = Arrays.copyOfRange(result, result.length/2, result.length);
+        
+        //S-boxes
+        int[][] S0 = { {1,0,3,2} , {3,2,1,0} , {0,2,1,3} , {3,1,3,2} } ;
+        int[][] S1 = { {0,1,2,3},  {2,0,1,3}, {3,0,1,0}, {2,1,0,3}} ;
+        
+        byte[] row0array = {resultLeft[0], resultLeft[3]};
+        byte[] column0array = {resultLeft[1], resultLeft[2]};
+        
+        byte[] row1array = {resultRight[0], resultRight[3]};
+        byte[] column1array = {resultRight[1], resultRight[2]};
+        
+        int row0 = toDec(row0array);
+        int column0 = toDec(column0array);
+        
+        int row1 = toDec(row1array);
+        int column1 = toDec(column1array);
+        
+        resultLeft = toByteArray(S0[row0][column0],2);
+        resultRight = toByteArray(S1[row1][column1],2);
+        
+        result = ArrayUtils.addAll(resultLeft, resultRight);
+        
+        System.out.println("OUTPUT OF SBOXES");
+        print(result);
+        System.out.println();
+        
+        //P4
+        int[] P4 = {2, 4, 3, 1};
+        result = permutation(result, P4);
+        
+        System.out.println("AFTER P4");
+        print(result);
+        System.out.println();
+        
+        
+        System.out.println("******* F FUNCTION ********");
+        
+        return result;
+        
+        
+    }
+    
+    //permutation method 
+    public static byte[] permutation(byte[] bytes, int[] p) {
+        byte[] result = new byte[p.length];
+        for (int n=0;n<p.length;n++)
+            result[n] = bytes[p[n]-1];
+        return result;
+    }
+        
+
+    //XOR
+    public static byte[] XOR(byte[] array1, byte[] array2) {
+        byte[] xor = new byte[array1.length];
+        for (int i = 0; i < xor.length; i++) 
+            xor[i] = (byte) (array1[i] ^ array2[i]);
+        return xor;
+    }
+    
+    
+    //left shift
+    public static byte[] leftShift(byte[] array, int count){
+        for (int i=0; i < count ; i++){
+            int j;
+            byte first;
+            first=array[0];
+            for(j=0; j < array.length-1; j++){
+                array[j] = array[j+1];
+            }
+            array[j] = first;
+        }
+        return array;
+    }
+    
+    // convert integer to byte array of certain length
+    public static byte[] toByteArray(int x, int len) {
+        String binString = String.format("%" + len + "s", Integer.toBinaryString(x)).replaceAll(" ", "0");
+        char[] ch = binString.toCharArray();
+        byte[] bytes = new byte[binString.length()];
+        for(int i=0; i<bytes.length; i++){
+            if(ch[i] == 0){bytes[i]=0;}
+            else {bytes[i]=1;}
+            }
+        return bytes;
+    }
+
+    //convert byte array to decimal bumber
+    public static int toDec(byte[] bytes){
+        int temp=0;
+        int base = 1;
+        for(int i=bytes.length-1; i>=0; i--){
+            int n = bytes[i];
+            temp = temp + (n*base);
+            base = base * 2;
+        }
+        return temp;
+    }
+    
+    
+    public static void print(byte[] array){
+        for(int i=0; i<array.length; i++)     
+            System.out.print(array[i]);
+    }
+}
+
+
+class KeyGen {
+    private byte[] k1;
+    private byte[] k2;
+    
+    public KeyGen(byte[] rawKey){
+        int[] p10 = {3, 5, 2, 7, 4, 10, 1, 9, 8, 6};
+        int[] p8 = {6, 3, 7, 4, 8, 5, 10, 9};
+        byte[] output = SDES.permutation(rawKey,p10);
+        int splitSize = output.length/2;
+        byte[] outputLeft = Arrays.copyOfRange(output, 0, splitSize);
+        byte[] outputRight = Arrays.copyOfRange(output, splitSize, output.length);
+        output = ArrayUtils.addAll(SDES.leftShift(outputLeft,1),SDES.leftShift(outputRight,1));
+        this.k1 = SDES.permutation(output, p8);
+        output = ArrayUtils.addAll(SDES.leftShift(outputLeft,2),SDES.leftShift(outputRight,2));
+        this.k2 = SDES.permutation(output, p8);
+        
+    }
+    
+    
+    public byte[] getK1() {
+        return k1;
+    }
+    
+    public byte[] getK2() {
+        return k2;
+    }
+    
+}
