@@ -30,6 +30,15 @@ public class SDES {
         int[] IP = {2, 6, 3, 1, 4, 8, 5, 7};
         byte[] IPResult = permutation(plainText, IP);
         
+        // The video showed that after initial permutation the output index would be 1,5,2,0,7,4,6
+        // so maybe we can set the cypherText to those indicies of the plaintext and run it through the rest
+        // of the algorithims
+        
+        /**
+           cypher = { plainText[1], plainText[5], plainText[2], plainText[0], plainText[3], 
+           plainText[7], plainText[4], plainText[6] }
+           
+          **/
         
         KeyGen keyGen = new KeyGen(rawKey);
         byte[] K1 = keyGen.getK1();
