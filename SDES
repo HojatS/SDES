@@ -63,6 +63,11 @@ public class SDES {
         byte[] K1 = keyGen.getK1();
         byte[] K2 = keyGen.getK2();
         
+        System.out.println("K1:");
+        print(K1);
+        System.out.println("K2:");
+        print(K2);
+        
         //fK round 2
         plaintext = fK(IPResult, K2);
  
