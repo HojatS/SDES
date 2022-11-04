@@ -5,12 +5,17 @@ public class SDES {
     
     public static void main(String[] args){
         
-        byte[] pt = {1,0,1,0,1,0,1,0};
+        byte[] input = {1,0,1,0,1,0,1,0};
         byte[] rk = {1,1,1,0,0,0,1,1,1,0};
         
-        byte[] c = encrypt(rk, pt);
-        System.out.println("CIPHER:");
-        print(c);
+        //decrypt
+        //byte[] a = decrypt(rk, input);
+        
+        //encrypt
+        byte[] a = encrypt(rk, input);
+        
+        System.out.println("RESULT:");
+        print(a);
         
     }
     
