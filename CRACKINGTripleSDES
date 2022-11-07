@@ -1,1 +1,284 @@
 
+import org.apache.commons.lang3.*;
+import java.util.*;
+
+public class TripleSDES {
+    
+    public static void main(String[] args){
+        
+        
+        String msg ="00011111100111111110011111101100111000000011001011110010101010110001011101001101000000110011010111111110000000001010111111000001010010111001111001010101100000110111100011111101011100100100010101000011001100101000000101111011000010011010111100010001001000100001111100100000001000000001101101000000001010111010000001000010011100101111001101111011001001010001100010100000";
+        char[] ch = msg.toCharArray();
+        byte[] bytes = new byte[msg.length()];
+        
+        //Convert msg to Byte Array
+        for(int i=0; i<bytes.length; i++){
+            if(ch[i] == '0'){bytes[i]=0;}
+            else {bytes[i]=1;}
+        }
+        
+        //Divide array to 8 bit sections
+        byte[][] input = new byte[bytes.length/8][8];
+        for(int i=0; i<input.length; i++){
+            int k = 0;
+            for(int j=i*8; j<8*(i+1); j++){
+                input[i][k]=bytes[j];
+                k++;
+            }
+        }
+        
+        
+        //generate every possible rawkey
+        int size = (int)Math.pow(2,10);
+        byte[][] keys = new byte[size][10];
+        for(int i=0; i<size; i++)
+            keys[i] = toByteArray(i,10);
+            
+            
+        byte[] plaintext = new byte[bytes.length];
+        byte[][] plaintext8bits = new byte[bytes.length/8][8];
+        
+        //try decrypting using every key and produce results
+        for(int i=0; i<keys.length; i++){
+            for (int ii=0; ii<keys.length; ii++){
+                byte[] k1 = keys[i];
+                byte[] k2 = keys[ii];
+                
+                for(int x=0; x<bytes.length/8; x++){
+                    plaintext8bits[x] = decrypt(k1,encrypt(k2,decrypt(k1,input[x])));
+                }
+                
+                //concatenate all 8bit decryptions to form plaintext
+                for(int a=0; a<plaintext8bits.length; a++){
+                    int b=0;
+                    for(int c=a*8; c<8*(a+1); c++){
+                        plaintext[c] = plaintext8bits[a][b];
+                        b++;
+                    }
+                }
+                
+                //convert to string and check for special characters
+                String text = CASCII.toString(plaintext);
+                
+                if(text.contains(" ARE ")){
+                    System.out.println("Decrypted Text:");
+                    System.out.println(text);
+                    System.out.println("Key 1:");
+                    print(keys[i]);
+                    System.out.println("Key 2:");
+                    print(keys[ii]);
+                }
+            } 
+        }
+    }
+    
+    //encrypt
+    public static byte[] encrypt(byte[] rawKey, byte[] plainText){
+        byte[] cipher = new byte[plainText.length];
+        
+        //IP (initial permutation)
+        int[] IP = {2, 6, 3, 1, 4, 8, 5, 7};
+        byte[] IPResult = permutation(plainText, IP);
+        
+        //Generate Keys
+        KeyGen keyGen = new KeyGen(rawKey);
+        byte[] K1 = keyGen.getK1();
+        byte[] K2 = keyGen.getK2();
+        
+        //fK round 1
+        cipher = fK(IPResult, K1);
+        
+        //Swap = left shift by 4
+        
+        cipher = leftShift(cipher, cipher.length/2);
+        
+        //fk round 2
+        cipher = fK(cipher, K2);
+        
+        
+        //IP-1 (inverse)
+        int[] inverseIP = {4, 1, 3, 5, 7, 2, 8, 6};
+        cipher = permutation(cipher, inverseIP);
+        
+        return cipher;
+    }
+    
+    //decrypt
+    public static byte[] decrypt(byte[] rawKey, byte[] cipherText){
+        byte[] plaintext = new byte[cipherText.length];
+        
+        //IP (initial permutation)
+        int[] IP = {2, 6, 3, 1, 4, 8, 5, 7};
+        byte[] IPResult = permutation(cipherText, IP);
+        
+        //generate keys
+        KeyGen keyGen = new KeyGen(rawKey);
+        byte[] K1 = keyGen.getK1();
+        byte[] K2 = keyGen.getK2();
+        
+        //fK round 2
+        plaintext = fK(IPResult, K2);
+ 
+        //Swap = left shift by half length
+        plaintext = leftShift(plaintext, plaintext.length/2); 
+        
+        //fk round 1
+        plaintext = fK(plaintext, K1);
+        
+        //IP-1 (inverse)
+        int[] inverseIP = {4, 1, 3, 5, 7, 2, 8, 6};
+        plaintext = permutation(plaintext, inverseIP);
+        
+        return plaintext;
+        
+    }
+    
+    //fK function
+    public static byte[] fK(byte[] input, byte[] key){
+        byte[] output = new byte[input.length];
+        
+        //split 
+        int splitSize = input.length/2;
+        byte[] IPLeft = Arrays.copyOfRange(input, 0, splitSize);
+        byte[] IPRight = Arrays.copyOfRange(input, splitSize, input.length);
+        
+        output = ArrayUtils.addAll(XOR(IPLeft,functionF(IPRight,key)),IPRight);
+        
+        return output;
+    }
+    
+    //F Function
+    public static byte[] functionF(byte[] byteArray, byte[] key){
+        byte[] result = new byte[byteArray.length];
+        
+        //EP (expansion Pbox)
+        int[] EP = {4, 1, 2, 3, 2, 3, 4, 1};
+        result = permutation(byteArray, EP);
+        
+        //XOR
+        result = XOR(result, key);
+        
+        //split
+        byte[] resultLeft = Arrays.copyOfRange(result, 0, result.length/2);
+        byte[] resultRight = Arrays.copyOfRange(result, result.length/2, result.length);
+        
+        //S-boxes
+        int[][] S0 = { {1,0,3,2} , {3,2,1,0} , {0,2,1,3} , {3,1,3,2} } ;
+        int[][] S1 = { {0,1,2,3},  {2,0,1,3}, {3,0,1,0}, {2,1,0,3}} ;
+        
+        byte[] row0array = {resultLeft[0], resultLeft[3]};
+        byte[] column0array = {resultLeft[1], resultLeft[2]};
+        
+        byte[] row1array = {resultRight[0], resultRight[3]};
+        byte[] column1array = {resultRight[1], resultRight[2]};
+        
+        int row0 = toDec(row0array);
+        int column0 = toDec(column0array);
+        
+        int row1 = toDec(row1array);
+        int column1 = toDec(column1array);
+        
+        resultLeft = toByteArray(S0[row0][column0],2);
+        resultRight = toByteArray(S1[row1][column1],2);
+        
+        result = ArrayUtils.addAll(resultLeft, resultRight);
+        
+        //P4
+        int[] P4 = {2, 4, 3, 1};
+        result = permutation(result, P4);
+        
+        return result;
+        
+        
+    }
+    
+    //permutation method 
+    public static byte[] permutation(byte[] bytes, int[] p) {
+        byte[] result = new byte[p.length];
+        for (int n=0;n<p.length;n++)
+            result[n] = bytes[p[n]-1];
+        return result;
+    }
+        
+
+    //XOR
+    public static byte[] XOR(byte[] array1, byte[] array2) {
+        byte[] xor = new byte[array1.length];
+        for (int i = 0; i < xor.length; i++) 
+            xor[i] = (byte) (array1[i] ^ array2[i]);
+        return xor;
+    }
+    
+    
+    //left shift
+    public static byte[] leftShift(byte[] array, int count){
+        for (int i=0; i < count ; i++){
+            int j;
+            byte first;
+            first=array[0];
+            for(j=0; j < array.length-1; j++){
+                array[j] = array[j+1];
+            }
+            array[j] = first;
+        }
+        return array;
+    }
+    
+    // convert integer to byte array of certain length
+    public static byte[] toByteArray(int x, int len) {
+        String binString = String.format("%" + len + "s", Integer.toBinaryString(x)).replaceAll(" ", "0");
+        char[] ch = binString.toCharArray();
+        byte[] bytes = new byte[binString.length()];
+        for(int i=0; i<bytes.length; i++){
+            if(ch[i] == '0'){bytes[i]=0;}
+            else {bytes[i]=1;}
+            }
+        return bytes;
+    }
+
+    //convert byte array to decimal number
+    public static int toDec(byte[] bytes){
+        int temp=0;
+        int base = 1;
+        for(int i=bytes.length-1; i>=0; i--){
+            int n = bytes[i];
+            temp = temp + (n*base);
+            base = base * 2;
+        }
+        return temp;
+    }
+    
+    public static void print(byte[] array){
+        for(int i=0; i<array.length; i++)     
+            System.out.print(array[i]);
+        System.out.println();
+    }
+}
+
+
+class KeyGen {
+    private byte[] k1;
+    private byte[] k2;
+    
+    public KeyGen(byte[] rawKey){
+        int[] p10 = {3, 5, 2, 7, 4, 10, 1, 9, 8, 6};
+        int[] p8 = {6, 3, 7, 4, 8, 5, 10, 9};
+        byte[] output = TripleSDES.permutation(rawKey,p10);
+        int splitSize = output.length/2;
+        byte[] outputLeft = Arrays.copyOfRange(output, 0, splitSize);
+        byte[] outputRight = Arrays.copyOfRange(output, splitSize, output.length);
+        output = ArrayUtils.addAll(TripleSDES.leftShift(outputLeft,1),TripleSDES.leftShift(outputRight,1));
+        this.k1 = TripleSDES.permutation(output, p8);
+        output = ArrayUtils.addAll(TripleSDES.leftShift(outputLeft,2),TripleSDES.leftShift(outputRight,2));
+        this.k2 = TripleSDES.permutation(output, p8);
+        
+    }
+    
+    public byte[] getK1() {
+        return k1;
+    }
+    
+    public byte[] getK2() {
+        return k2;
+    }  
+}
