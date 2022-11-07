@@ -75,21 +75,6 @@ public class Cracking {
 
     }
 
-    /**
-     * Method for msg1.txt
-     *
-     * A brute force attack on SDES with a 10-bit key has 2^10 or 1024 possibilities
-     */
-//    public static byte[] msg1Decrypt() throws IOException {
-//        //Reads msg1.txt file as a scanner input
-//        Scanner msg1 = new Scanner(
-//                new File("/home/bmillie/Documents/Cryptography/Project/SDES/Project1/src/msg1.txt"));
-//
-////        //Read through end of file
-////        while(msg1.hasNext()){
-////
-////        }
-//    }
 
     /**
      * Method to convert string to byte
@@ -104,13 +89,5 @@ public class Cracking {
         return result;
     }
 
-    /**
-     * Method to print Encrypted text
-     */
-    public static void printArray(byte[] arr) {
-        for (int i = 0; i < arr.length; i++) {
-            System.out.print(arr[i]);
-        }
-        System.out.println();
-    }
+    
 }
