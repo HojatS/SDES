@@ -8,7 +8,6 @@ public class SDES {
 
     public static void main(String[] args) {
 
-        System.out.println("Decrypted Text:");
         msgDecode();
 
     }
@@ -66,6 +65,7 @@ public class SDES {
             String text = CASCII.toString(plaintext);
 
             if(text.contains(" AND ")){
+                System.out.println("Decrypted Text:");
                 System.out.println(text);
                 System.out.println("Key:");
                 print(keys[i]);
