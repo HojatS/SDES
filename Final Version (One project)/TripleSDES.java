@@ -15,8 +15,9 @@ public class TripleSDES {
         //decrypt
         //byte[] a = decrypt(k1,encrypt(k2,decrypt(k1,input)));
         
-        System.out.println("RESULT:");
-        Utl.print(a);
+        //System.out.println("RESULT:");
+        //Utl.print(a);
+        displayTable();
         
     }
     
@@ -147,7 +148,112 @@ public class TripleSDES {
         
         return result;
         
+    }
+    public static void displayTable(){
+        ArrayList<byte[]> rawKeyList1 = new ArrayList<byte[]>();
+        ArrayList<byte[]> rawKeyList12 = new ArrayList<byte[]>();
+        ArrayList<byte[]> rawKeyList2 = new ArrayList<byte[]>();
+        ArrayList<byte[]> rawKeyList22 = new ArrayList<byte[]>();
+
+        ArrayList<byte[]> plainTextList = new ArrayList<byte[]>();
+        ArrayList<byte[]> cypherTextList = new ArrayList<byte[]>();
+
+        ArrayList<byte[]> answerList = new ArrayList<byte[]>();
+        ArrayList<byte[]> answerList2 = new ArrayList<byte[]>();
+
+
+
+        byte[] rk1 = {0,0,0,0,0,0,0,0,0,0};
+        byte[] rk2 = {0,0,0,0,0,0,0,0,0,0};
+        byte[] pt1 = {0,0,0,0,0,0,0,0};
+        rawKeyList1.add(rk1);
+        rawKeyList1.add(rk2);
+        plainTextList.add(pt1);
+
+        byte[] rk3 = {1,0,0,0,1,0,1,1,1,0};
+        byte[] rk4 = {0,1,1,0,1,0,1,1,1,0};
+        byte[] pt2 = {1,1,0,1,0,1,1,1};
+        rawKeyList1.add(rk3);
+        rawKeyList1.add(rk4);
+        plainTextList.add(pt2);
+
+        byte[] rk5 = {1,0,0,0,1,0,1,1,1,0};
+        byte[] rk6 = {0,1,1,0,1,0,1,1,1,0};
+        byte[] pt3 = {1,0,1,0,1,0,1,0};
+        rawKeyList12.add(rk5);
+        rawKeyList12.add(rk6);
+        plainTextList.add(pt3);
+
+        byte[] rk7 = {1,1,1,1,1,1,1,1,1,1};
+        byte[] rk8 = {1,1,1,1,1,1,1,1,1,1};
+        byte[] pt4 = {1,0,1,0,1,0,1,0};
+        rawKeyList12.add(rk7);
+        rawKeyList12.add(rk8);
+        plainTextList.add(pt4);
+
+
+        byte[] rk9 = {1,0,0,0,1,0,1,1,1,0};
+        byte[] rk10 = {0,1,1,0,1,0,1,1,1,0};
+        byte[] ct1 = {1,1,1,0,0,1,1,0};
+        rawKeyList2.add(rk9);
+        rawKeyList2.add(rk10);
+        cypherTextList.add(ct1);
+
+        byte[] rk11 = {1,0,1,1,1,0,1,1,1,1};
+        byte[] rk12 = {0,1,1,0,1,0,1,1,1,0};
+        byte[] ct2 = {0,1,0,1,0,0,0,0};
+        rawKeyList2.add(rk11);
+        rawKeyList2.add(rk12);
+        cypherTextList.add(ct2);
+
+        byte[] rk13 = {0,0,0,0,0,0,0,0,0,0};
+        byte[] rk14 = {0,0,0,0,0,0,0,0,0,0};
+        byte[] ct3 = {1,0,0,0,0,0,0,0};
+        rawKeyList22.add(rk13);
+        rawKeyList22.add(rk14);
+        cypherTextList.add(ct3);
+
+        byte[] rk15 = {1,1,1,1,1,1,1,1,1,1};
+        byte[] rk16 = {1,1,1,1,1,1,1,1,1,1};
+        byte[] ct4 = {1,0,0,1,0,0,1,0};
+        rawKeyList22.add(rk15);
+        rawKeyList22.add(rk16);
+        cypherTextList.add(ct4);
         
+        byte[] answera = encrypt(rk1, decrypt(rk2,encrypt(rk1,pt1)));
+        byte[] answerb = encrypt(rk3, decrypt(rk4,encrypt(rk3,pt2)));
+        byte[] answerc = encrypt(rk5, decrypt(rk6,encrypt(rk5,pt3)));
+        byte[] answerd = encrypt(rk7, decrypt(rk8,encrypt(rk7,pt4)));
+
+        byte[] answere = decrypt(rk9,encrypt(rk10,decrypt(rk9,ct1)));
+        byte[] answerf = decrypt(rk11,encrypt(rk12,decrypt(rk11,ct2)));
+        byte[] answerg = decrypt(rk13,encrypt(rk14,decrypt(rk13,ct3)));
+        byte[] answerh = decrypt(rk15,encrypt(rk16,decrypt(rk15,ct4)));
+        answerList.add(answera);
+        answerList.add(answerb);
+        answerList.add(answerc);
+        answerList.add(answerd);
+
+        answerList2.add(answere);
+        answerList2.add(answerf);
+        answerList2.add(answerg);
+        answerList2.add(answerh);
+
+        System.out.println("\t\tRawkey 1\t\t\t\t\t\t\t\tRawkey 2\t\t\t\t\tPlaintext Text" +
+                "\t\t\t\t\tCipher Text");
+
+        for(int i = 0; i < answerList.size(); i++){
+            printArrayList(rawKeyList1.get(i),rawKeyList2.get(i), plainTextList.get(i),answerList.get(i));
+        }
+        System.out.println();
+        for(int i = 0; i < answerList2.size(); i++){
+            printArrayList(rawKeyList12.get(i),rawKeyList22.get(i),answerList2.get(i),cypherTextList.get(i));
+        }
+    }
+    
+    public static void printArrayList(byte[] rawKey1, byte [] rawKey2, byte[] plaintext, byte[] answer){
+        System.out.println(Arrays.toString(rawKey1) + "\t\t" + Arrays.toString(rawKey2) +  "\t\t" +
+                Arrays.toString(plaintext) + "\t\t" + Arrays.toString(answer));
     }
     
     
