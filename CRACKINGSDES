@@ -8,18 +8,6 @@ public class SDES {
 
     public static void main(String[] args) {
 
-        byte[] input = {1, 0, 1, 0, 1, 0, 1, 0};
-        byte[] rk = {1, 1, 1, 0, 0, 0, 1, 1, 1, 0};
-
-        //decrypt
-        //byte[] a = decrypt(rk, input);
-
-        //encrypt
-        byte[] x = encrypt(rk, input);
-
-        System.out.println("RESULT:");
-        print(x);
-
         System.out.println("Decrypted Text:");
         msgDecode();
 
