@@ -14,8 +14,9 @@ public class SDES {
         //decrypt
         //byte[] a = decrypt(rk, input);
         
-        System.out.println("RESULT:");
-        Utl.print(a);
+       //System.out.println("RESULT:");
+        //Utl.print(a);
+        displayTable();
         
     }
     
