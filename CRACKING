@@ -57,7 +57,7 @@ public class SDES {
             
             //convert to string and check for special characters
             String text = CASCII.toString(plaintext);
-            Pattern pattern = Pattern.compile("[^a-zA-Z0-9][]");
+            Pattern pattern = Pattern.compile("[^a-zA-Z0-9]");
             Matcher match = pattern.matcher(text);
             boolean val = match.find();
             if(val == false){
