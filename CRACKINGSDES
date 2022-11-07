@@ -79,7 +79,7 @@ public class SDES {
 
             if(text.contains("WHOEVER")){
                 System.out.println("SDES decoded text: " + text);
-                System.exit(0);
+                break;
             }
 
         }
