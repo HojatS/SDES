@@ -13,7 +13,7 @@ public class TripleSDES {
         //byte[] a = decrypt(k1,k2,input);
         System.out.println("RESULT:");
         Utl.print(a);
-        //displayTable();
+        displayTable();
     }
     
     //encrypt
@@ -49,56 +49,56 @@ public class TripleSDES {
         byte[] rk2 = {0,0,0,0,0,0,0,0,0,0};
         byte[] pt1 = {0,0,0,0,0,0,0,0};
         rawKeyList1.add(rk1);
-        rawKeyList1.add(rk2);
+        rawKeyList2.add(rk2);
         plainTextList.add(pt1);
 
         byte[] rk3 = {1,0,0,0,1,0,1,1,1,0};
         byte[] rk4 = {0,1,1,0,1,0,1,1,1,0};
         byte[] pt2 = {1,1,0,1,0,1,1,1};
         rawKeyList1.add(rk3);
-        rawKeyList1.add(rk4);
+        rawKeyList2.add(rk4);
         plainTextList.add(pt2);
 
         byte[] rk5 = {1,0,0,0,1,0,1,1,1,0};
         byte[] rk6 = {0,1,1,0,1,0,1,1,1,0};
         byte[] pt3 = {1,0,1,0,1,0,1,0};
-        rawKeyList12.add(rk5);
-        rawKeyList12.add(rk6);
+        rawKeyList1.add(rk5);
+        rawKeyList2.add(rk6);
         plainTextList.add(pt3);
 
         byte[] rk7 = {1,1,1,1,1,1,1,1,1,1};
         byte[] rk8 = {1,1,1,1,1,1,1,1,1,1};
         byte[] pt4 = {1,0,1,0,1,0,1,0};
-        rawKeyList12.add(rk7);
-        rawKeyList12.add(rk8);
+        rawKeyList1.add(rk7);
+        rawKeyList2.add(rk8);
         plainTextList.add(pt4);
 
 
         byte[] rk9 = {1,0,0,0,1,0,1,1,1,0};
         byte[] rk10 = {0,1,1,0,1,0,1,1,1,0};
         byte[] ct1 = {1,1,1,0,0,1,1,0};
-        rawKeyList2.add(rk9);
-        rawKeyList2.add(rk10);
+        rawKeyList12.add(rk9);
+        rawKeyList22.add(rk10);
         cypherTextList.add(ct1);
 
         byte[] rk11 = {1,0,1,1,1,0,1,1,1,1};
         byte[] rk12 = {0,1,1,0,1,0,1,1,1,0};
         byte[] ct2 = {0,1,0,1,0,0,0,0};
-        rawKeyList2.add(rk11);
-        rawKeyList2.add(rk12);
+        rawKeyList12.add(rk11);
+        rawKeyList22.add(rk12);
         cypherTextList.add(ct2);
 
         byte[] rk13 = {0,0,0,0,0,0,0,0,0,0};
         byte[] rk14 = {0,0,0,0,0,0,0,0,0,0};
         byte[] ct3 = {1,0,0,0,0,0,0,0};
-        rawKeyList22.add(rk13);
+        rawKeyList12.add(rk13);
         rawKeyList22.add(rk14);
         cypherTextList.add(ct3);
 
         byte[] rk15 = {1,1,1,1,1,1,1,1,1,1};
         byte[] rk16 = {1,1,1,1,1,1,1,1,1,1};
         byte[] ct4 = {1,0,0,1,0,0,1,0};
-        rawKeyList22.add(rk15);
+        rawKeyList12.add(rk15);
         rawKeyList22.add(rk16);
         cypherTextList.add(ct4);
         
